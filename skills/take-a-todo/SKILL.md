@@ -5,9 +5,11 @@ description: Use when ready to work on an issue from the backlog - promotes the 
 
 # take-a-todo
 
-Promote a todo spec to active development with isolated git worktree. Moves spec from `docs/todo/` to `docs/specs/`, creates a worktree at `.worktree/{branch-name}/`, and loads context for planning.
+Promote a todo spec to active development with isolated git worktree. Moves spec from `docs/todo/` to `docs/specs/`, delegates worktree creation to `superpowers:using-git-worktrees`, and loads context for planning.
 
 **User's instruction**: {{args}}
+
+---
 
 ## Your Task
 
@@ -15,94 +17,102 @@ Promote a todo spec to active development with isolated git worktree. Moves spec
 2. If user specified a spec name, use that; otherwise take the earliest by date
 3. Move the file: `docs/todo/{name}.md` → `docs/specs/{name}.md`
 4. Commit the move to git (in current branch)
-5. Create git worktree in `.worktree/{branch-name}/` for isolated development
+5. **Delegate to `superpowers:using-git-worktrees`** for worktree creation
 6. Read the moved spec into context
 7. Ask user what to do next
+
+---
 
 ## When to Use
 
 Ready to work on an issue from the backlog with isolated development environment.
 
+---
+
 ## Steps
 
-1. **List todo specs**:
-   ```bash
-   ls -la docs/todo/*.md 2>/dev/null | awk '{print $9}' | xargs -I{} basename {}
-   ```
+### 1. List todo specs
+```bash
+ls -la docs/todo/*.md 2>/dev/null | awk '{print $9}' | xargs -I{} basename {}
+```
 
-2. **Select spec**:
-   - If user provided `{name}`, match partial string against filenames
-   - If no argument, take earliest by date (oldest first)
-   - Show which spec was selected
+### 2. Select spec
+- If user provided `{name}`, match partial string against filenames
+- If no argument, take earliest by date (oldest first)
+- Show which spec was selected
 
-3. **Move to specs**:
-   ```bash
-   mv docs/todo/{filename} docs/specs/{filename}
-   ```
+### 3. Move to specs
+```bash
+mv docs/todo/{filename} docs/specs/{filename}
+```
 
-4. **Commit the move** (in current branch before worktree):
-   ```bash
-   git add docs/todo/ docs/specs/
-   git commit -m "docs(specs): promote {issue-name} from todo to active
+### 4. Commit the move (in current branch before worktree)
+```bash
+git add docs/todo/ docs/specs/
+git commit -m "docs(specs): promote {issue-name} from todo to active
 
-   Moved from docs/todo/ to docs/specs/ for implementation.
+Moved from docs/todo/ to docs/specs/ for implementation.
 
-   Spec: {filename}"
-   
-   echo "✓ Spec move committed to $CURRENT_BRANCH"
-   ```
+Spec: {filename}"
+```
 
-5. **Create branch name from spec**:
-   - Extract issue name from filename (remove date suffix)
-   - Convert to branch-friendly format: `fix/{issue-name}` or `feat/{issue-name}`
-   - Example: `registration-field-naming-2026-05-04.md` → `fix/registration-field-naming`
+### 5. Create branch name from spec
+- Extract issue name from filename (remove date suffix)
+- Convert to branch-friendly format: `fix/{issue-name}` or `feat/{issue-name}`
+- Example: `registration-field-naming-2026-05-04.md` → `fix/registration-field-naming`
 
-6. **Check current branch**:
-   ```bash
-   # Get current branch
-   CURRENT_BRANCH=$(git branch --show-current)
-   
-   # Warn if on main/master
-   if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "master" ]]; then
-     echo "⚠️  WARNING: You are on $CURRENT_BRANCH branch"
-     echo "Todo tasks should be worked on feature branches, not main/master"
-     echo "Consider: git checkout -b feature/my-feature"
-     echo ""
-     read -p "Continue anyway? (y/N): " confirm
-     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-       echo "Aborted. Please create a feature branch first."
-       exit 1
-     fi
-   fi
-   
-   echo "Creating worktree from branch: $CURRENT_BRANCH"
-   ```
+### 6. Check current branch
+```bash
+# Get current branch
+CURRENT_BRANCH=$(git branch --show-current)
 
-7. **Create git worktree**:
-   ```bash
-   # Create worktree directory
-   mkdir -p .worktree
-   
-   # Create new branch and worktree from current branch (NOT main)
-   git worktree add -b {branch-name} .worktree/{branch-name} "$CURRENT_BRANCH"
-   
-   # Set session working directory to worktree
-   cd .worktree/{branch-name}
-   ```
+# Warn if on main/master
+if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "master" ]]; then
+  echo "⚠️  WARNING: You are on $CURRENT_BRANCH branch"
+  echo "Todo tasks should be worked on feature branches, not main/master"
+  echo "Consider: git checkout -b feature/my-feature"
+  echo ""
+  read -p "Continue anyway? (y/N): " confirm
+  if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    echo "Aborted. Please create a feature branch first."
+    exit 1
+  fi
+fi
+```
 
-7. **Load into context**: Read the moved spec file
+### 7. Delegate to `superpowers:using-git-worktrees`
 
-8. **Prompt user**:
-   ```
-   What would you like to do with this spec?
-   
-   A) Review - Read through and provide feedback
-   B) Revise - Make edits to the spec
-   C) Plan - Start writing implementation plan (use superpowers:writing-plans)
-   
-   Worktree created: .worktree/{branch-name}/
-   Working directory switched to worktree
-   ```
+Instead of manually creating worktrees, invoke the proper superpowers skill:
+
+```
+Now I'll use superpowers:using-git-worktrees to create an isolated workspace for this branch.
+
+Branch: {branch-name}
+Base branch: {CURRENT_BRANCH}
+```
+
+The `superpowers:using-git-worktrees` skill will:
+- Select appropriate worktree directory (.worktrees, worktrees, or global location)
+- Verify .gitignore safety
+- Create the worktree with proper isolation
+- Handle directory selection systematically
+
+### 8. Load into context
+Read the moved spec file
+
+### 9. Prompt user
+```
+What would you like to do with this spec?
+
+A) Review - Read through and provide feedback
+B) Revise - Make edits to the spec
+C) Plan - Start writing implementation plan (invokes superpowers:writing-plans)
+
+Worktree created by superpowers:using-git-worktrees
+Spec loaded: {filename}
+```
+
+---
 
 ## Input
 
@@ -111,13 +121,18 @@ Optional spec name (partial match allowed):
 - `/take-a-todo registration` → Takes matching spec (e.g., `registration-field-naming-2026-05-04.md`)
 - `/take-a-todo 2026-05-04` → Takes spec by date
 
+---
+
 ## Output
 
 - Spec moved to `docs/specs/`
-- Git worktree created at `.worktree/{branch-name}/`
+- Git commit created for the move
+- **Worktree created by `superpowers:using-git-worktrees`**
 - New branch checked out: `{branch-name}`
 - Spec content loaded in context
 - User prompted for next action
+
+---
 
 ## Branch Naming Convention
 
@@ -128,6 +143,8 @@ Optional spec name (partial match allowed):
 | Refactor | `refactor/` | `refactor/api-structure` |
 | Docs | `docs/` | `docs/api-guide` |
 | Test | `test/` | `test/registration-flow` |
+
+---
 
 ## Examples
 
@@ -152,11 +169,12 @@ Committed move to feature/provision-update-flow:
 
 Branch name: fix/registration-field-naming
 
-Creating worktree from: feature/provision-update-flow
-git worktree add -b fix/registration-field-naming .worktree/fix/registration-field-naming feature/provision-update-flow
+Now I'll use superpowers:using-git-worktrees to create an isolated workspace.
 
-Worktree created: .worktree/fix/registration-field-naming/
-Working directory: .worktree/fix/registration-field-naming
+[Invokes superpowers:using-git-worktrees skill]
+
+Worktree created: .worktrees/fix/registration-field-naming/
+Working directory: .worktrees/fix/registration-field-naming
 Branch: fix/registration-field-naming
 Base branch: feature/provision-update-flow
 
@@ -165,7 +183,7 @@ Base branch: feature/provision-update-flow
 What would you like to do with this spec?
 A) Review - Read through and provide feedback
 B) Revise - Make edits to the spec
-C) Plan - Start writing implementation plan (use superpowers:writing-plans)
+C) Plan - Start writing implementation plan (invokes superpowers:writing-plans)
 ```
 
 ### Example 2: Warning on main branch
@@ -205,8 +223,11 @@ Committed move to feature/provision-update-flow
 
 Branch name: fix/registration-field-naming
 
-Worktree created: .worktree/fix/registration-field-naming/
+Now I'll use superpowers:using-git-worktrees to create an isolated workspace.
 
+[Invokes superpowers:using-git-worktrees skill]
+
+Worktree created: .worktrees/fix/registration-field-naming/
 [Loads spec content]
 
 Ready for review, revision, or planning.
@@ -224,6 +245,8 @@ Tips:
 - Or specify an issue directly to create a new spec
 ```
 
+---
+
 ## Directory Structure
 
 ```
@@ -233,7 +256,7 @@ docs/
 └── specs/             # Active specs (ready for implementation)
     └── promoted-issue-2026-05-04.md
 
-.worktree/
+.worktrees/            # Managed by superpowers:using-git-worktrees
 └── fix/registration-field-naming/    # Isolated development environment
     ├── .git/                          # Worktree git link
     ├── backend/
@@ -244,43 +267,36 @@ docs/
 Git branches:
   main                                  # Protected base
   ├── feature/provision-update-flow     # Current feature branch (base for worktree)
-  │   └── fix/registration-field-naming  # Worktree branch (created from feature branch)
+  │   └── fix/registration-field-naming  # Worktree branch (created by superpowers:using-git-worktrees)
 ```
+
+---
 
 ## When Done: Merge Back
 
-When implementation is verified and ready to ship:
+When implementation is verified and ready to ship, use `superpowers:finishing-a-development-branch`:
 
-```bash
-# From worktree directory
-cd .worktree/fix/registration-field-naming
+```
+User: I'm done with this implementation.
 
-# Ensure changes are committed
-git status
-git add .
-git commit -m "fix: resolve registration field naming mismatch
+You: I'll use superpowers:finishing-a-development-branch to complete this work.
 
-- Change form field names from camelCase to snake_case  
-- Add agency_name, confirm_password, accept_terms
-- Update form submission handler
+[Invokes superpowers:finishing-a-development-branch skill]
 
-Fixes: registration-field-naming-2026-05-04.md"
-
-# Switch back to main repo and base branch
-cd ../..
-git checkout {base-branch}  # The branch worktree was created from (e.g., feature/provision-update-flow)
-
-# Merge worktree branch into base branch
-git merge fix/registration-field-naming --no-ff
-
-# Remove worktree
-git worktree remove .worktree/fix/registration-field-naming
-
-# Delete worktree branch after merge (optional)
-git branch -d fix/registration-field-naming
+The skill will:
+1. Verify tests pass
+2. Present merge options (local merge, PR, keep, discard)
+3. Execute your choice
+4. Cleanup worktree automatically
 ```
 
-**Note**: Merge into the same branch the worktree was created from (not necessarily main). Worktrees inherit from your current feature branch.
+**Benefits of using superpowers:finishing-a-development-branch:**
+- Consistent completion workflow across all projects
+- Proper worktree cleanup
+- Safety checks before merge
+- Handles both local and PR workflows
+
+---
 
 ## Workflow Context
 
@@ -290,18 +306,26 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
                          /take-a-todo (when ready)
                                    ↓
                     Move spec → docs/specs/
-                    Create worktree → .worktree/{branch}/
+                    Commit move
+                                   ↓
+              superpowers:using-git-worktrees
+              (creates isolated workspace)
                                    ↓
                     superpowers:writing-plans
+              (from worktree, creates plan.md)
                                    ↓
-               superpowers:subagent-driven-development
+      superpowers:subagent-driven-development
+              (executes implementation plan)
                                    ↓
                     Verify implementation
                                    ↓
-                         Merge worktree → main
+      superpowers:finishing-a-development-branch
+              (handles merge, cleanup)
                                    ↓
-                    Remove .worktree/{branch}/
+                    Back to base branch
 ```
+
+---
 
 ## Best Practices
 
@@ -309,9 +333,11 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
 2. **Oldest first**: Default to taking the earliest spec (FIFO)
 3. **Partial matching**: Accept substring matches for convenience
 4. **Branch hygiene**: Use conventional branch names (fix/, feat/, etc.)
-5. **Worktree isolation**: All work happens in worktree, base branch stays clean
-6. **Clean merge**: Merge with --no-ff for clear history
-7. **Cleanup**: Remove worktree after successful merge
+5. **Delegate worktree creation**: Let `superpowers:using-git-worktrees` handle isolation
+6. **Delegate completion**: Let `superpowers:finishing-a-development-branch` handle merge/cleanup
+7. **Trust superpowers**: Each skill has a focused responsibility
+
+---
 
 ## Safety Notes
 
@@ -320,34 +346,44 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
 - Todo tasks belong on feature branches where the work is relevant
 - If on main: You'll be prompted to create a feature branch first
 
-## Integration with Other Skills
+---
 
-- **/issue-to-spec**: Creates todo specs → Use `/take-a-todo` when ready
-- **superpowers:using-git-worktrees**: Reference for worktree best practices
-- **superpowers:writing-plans**: After taking spec → Choose "Plan" to create implementation plan
-- **superpowers:subagent-driven-development**: After planning → Execute with coordinated subagents
-- **superpowers:finishing-a-development-branch**: When done, merge worktree back to main
+## Integration with Superpowers Skills
 
-## Worktree Commands Reference
+| Superpower Skill | Role | When Invoked |
+|-----------------|------|--------------|
+| `superpowers:using-git-worktrees` | Creates isolated workspace | After committing spec move |
+| `superpowers:writing-plans` | Creates implementation plan.md | User chooses "Plan" option |
+| `superpowers:subagent-driven-development` | Executes implementation plan | After planning phase |
+| `superpowers:finishing-a-development-branch` | Handles merge and cleanup | When implementation is complete |
+| `superpowers:test-driven-development` | Writes tests before code | During implementation phase |
+| `superpowers:systematic-debugging` | Debugs issues found | When bugs are encountered |
 
-```bash
-# List all worktrees
-git worktree list
+---
 
-# Remove worktree after merge
-git worktree remove .worktree/{branch-name}
+## Delegation Benefits
 
-# Prune stale worktree references
-git worktree prune
+By delegating worktree creation and completion to superpowers skills:
 
-# Show worktree status
-git worktree list --porcelain
-```
+1. **Consistency**: Same workflow across all projects
+2. **Safety**: Proper .gitignore checks and cleanup
+3. **Simplicity**: take-a-todo focuses on spec promotion
+4. **Expertise**: Each superpowers skill is optimized for its task
+5. **Maintainability**: Superpowers updates improve all skills automatically
+
+---
 
 ## Technical Notes
 
-- Worktrees share the same `.git` object database
-- Commits in worktree are visible in all repos immediately
-- Never delete worktree directory manually (use `git worktree remove`)
-- Merge from base branch location, not from within worktree
-- Worktree branch should merge back into the branch it was created from
+- take-a-todo creates the git commit for spec promotion
+- Worktree creation is fully delegated to `superpowers:using-git-worktrees`
+- Worktree cleanup is handled by `superpowers:finishing-a-development-branch`
+- The skill acts as a coordinator: prepare → delegate → proceed
+
+---
+
+## Version
+
+**Current:** 1.1.0
+**Last Updated:** 2026-05-04
+**Changes:** Refactored to delegate worktree/completion to superpowers skills
