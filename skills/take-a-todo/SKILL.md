@@ -14,9 +14,10 @@ Promote a todo spec to active development with isolated git worktree. Moves spec
 1. List all specs in `docs/todo/`
 2. If user specified a spec name, use that; otherwise take the earliest by date
 3. Move the file: `docs/todo/{name}.md` → `docs/specs/{name}.md`
-4. Create git worktree in `.worktree/{branch-name}/` for isolated development
-5. Read the moved spec into context
-6. Ask user what to do next
+4. Commit the move to git (in current branch)
+5. Create git worktree in `.worktree/{branch-name}/` for isolated development
+6. Read the moved spec into context
+7. Ask user what to do next
 
 ## When to Use
 
@@ -39,12 +40,24 @@ Ready to work on an issue from the backlog with isolated development environment
    mv docs/todo/{filename} docs/specs/{filename}
    ```
 
-4. **Create branch name from spec**:
+4. **Commit the move** (in current branch before worktree):
+   ```bash
+   git add docs/todo/ docs/specs/
+   git commit -m "docs(specs): promote {issue-name} from todo to active
+
+   Moved from docs/todo/ to docs/specs/ for implementation.
+
+   Spec: {filename}"
+   
+   echo "✓ Spec move committed to $CURRENT_BRANCH"
+   ```
+
+5. **Create branch name from spec**:
    - Extract issue name from filename (remove date suffix)
    - Convert to branch-friendly format: `fix/{issue-name}` or `feat/{issue-name}`
    - Example: `registration-field-naming-2026-05-04.md` → `fix/registration-field-naming`
 
-5. **Check current branch**:
+6. **Check current branch**:
    ```bash
    # Get current branch
    CURRENT_BRANCH=$(git branch --show-current)
@@ -65,7 +78,7 @@ Ready to work on an issue from the backlog with isolated development environment
    echo "Creating worktree from branch: $CURRENT_BRANCH"
    ```
 
-6. **Create git worktree**:
+7. **Create git worktree**:
    ```bash
    # Create worktree directory
    mkdir -p .worktree
@@ -133,6 +146,10 @@ Current branch: feature/provision-update-flow
 
 Moved: docs/todo/registration-field-naming-2026-05-04.md → docs/specs/
 
+Committed move to feature/provision-update-flow:
+✓ git add docs/todo/ docs/specs/
+✓ git commit -m "docs(specs): promote registration-field-naming from todo to active"
+
 Branch name: fix/registration-field-naming
 
 Creating worktree from: feature/provision-update-flow
@@ -170,7 +187,7 @@ Continue anyway? (y/N):
 [User should create feature branch first]
 ```
 
-### Example 2: Take specific spec
+### Example 3: Take specific spec
 
 ```
 User: /take-a-todo registration
@@ -178,7 +195,13 @@ User: /take-a-todo registration
 You: Found matching spec:
   - registration-field-naming-2026-05-04.md
 
+Current branch: feature/provision-update-flow
+
 Moved: docs/todo/registration-field-naming-2026-05-04.md → docs/specs/
+
+Committed move to feature/provision-update-flow
+✓ git add docs/todo/ docs/specs/
+✓ git commit -m "docs(specs): promote registration-field-naming from todo to active"
 
 Branch name: fix/registration-field-naming
 
@@ -189,7 +212,7 @@ Worktree created: .worktree/fix/registration-field-naming/
 Ready for review, revision, or planning.
 ```
 
-### Example 3: No todos available
+### Example 4: No todos available
 
 ```
 User: /take-a-todo
