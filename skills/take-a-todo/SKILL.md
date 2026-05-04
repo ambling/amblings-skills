@@ -5,7 +5,7 @@ description: Use when ready to work on an issue from the backlog - promotes the 
 
 # take-a-todo
 
-Promote a todo spec to active development with isolated git worktree. Moves spec from `docs/todo/` to `docs/specs/`, delegates worktree creation to `superpowers:using-git-worktrees`, and loads context for planning.
+Promote a todo spec to active development with isolated git worktree. Moves spec from `docs/todo/` to `docs/specs/`, delegates worktree creation to `using-git-worktrees`, and loads context for planning.
 
 **User's instruction**: {{args}}
 
@@ -17,7 +17,7 @@ Promote a todo spec to active development with isolated git worktree. Moves spec
 2. If user specified a spec name, use that; otherwise take the earliest by date
 3. Move the file: `docs/todo/{name}.md` → `docs/specs/{name}.md`
 4. Commit the move to git (in current branch)
-5. **Delegate to `superpowers:using-git-worktrees`** for worktree creation
+5. **Delegate to `using-git-worktrees`** for worktree creation
 6. Read the moved spec into context
 7. Ask user what to do next
 
@@ -80,18 +80,18 @@ if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "master" ]]; then
 fi
 ```
 
-### 7. Delegate to `superpowers:using-git-worktrees`
+### 7. Delegate to `using-git-worktrees`
 
 Instead of manually creating worktrees, invoke the proper superpowers skill:
 
 ```
-Now I'll use superpowers:using-git-worktrees to create an isolated workspace for this branch.
+Now I'll use using-git-worktrees to create an isolated workspace for this branch.
 
 Branch: {branch-name}
 Base branch: {CURRENT_BRANCH}
 ```
 
-The `superpowers:using-git-worktrees` skill will:
+The `using-git-worktrees` skill will:
 - Select appropriate worktree directory (.worktrees, worktrees, or global location)
 - Verify .gitignore safety
 - Create the worktree with proper isolation
@@ -106,9 +106,9 @@ What would you like to do with this spec?
 
 A) Review - Read through and provide feedback
 B) Revise - Make edits to the spec
-C) Plan - Start writing implementation plan (invokes superpowers:writing-plans)
+C) Plan - Start writing implementation plan (invokes writing-plans)
 
-Worktree created by superpowers:using-git-worktrees
+Worktree created by using-git-worktrees
 Spec loaded: {filename}
 ```
 
@@ -127,7 +127,7 @@ Optional spec name (partial match allowed):
 
 - Spec moved to `docs/specs/`
 - Git commit created for the move
-- **Worktree created by `superpowers:using-git-worktrees`**
+- **Worktree created by `using-git-worktrees`**
 - New branch checked out: `{branch-name}`
 - Spec content loaded in context
 - User prompted for next action
@@ -169,9 +169,9 @@ Committed move to feature/provision-update-flow:
 
 Branch name: fix/registration-field-naming
 
-Now I'll use superpowers:using-git-worktrees to create an isolated workspace.
+Now I'll use using-git-worktrees to create an isolated workspace.
 
-[Invokes superpowers:using-git-worktrees skill]
+[Invokes using-git-worktrees skill]
 
 Worktree created: .worktrees/fix/registration-field-naming/
 Working directory: .worktrees/fix/registration-field-naming
@@ -183,7 +183,7 @@ Base branch: feature/provision-update-flow
 What would you like to do with this spec?
 A) Review - Read through and provide feedback
 B) Revise - Make edits to the spec
-C) Plan - Start writing implementation plan (invokes superpowers:writing-plans)
+C) Plan - Start writing implementation plan (invokes writing-plans)
 ```
 
 ### Example 2: Warning on main branch
@@ -223,9 +223,9 @@ Committed move to feature/provision-update-flow
 
 Branch name: fix/registration-field-naming
 
-Now I'll use superpowers:using-git-worktrees to create an isolated workspace.
+Now I'll use using-git-worktrees to create an isolated workspace.
 
-[Invokes superpowers:using-git-worktrees skill]
+[Invokes using-git-worktrees skill]
 
 Worktree created: .worktrees/fix/registration-field-naming/
 [Loads spec content]
@@ -256,7 +256,7 @@ docs/
 └── specs/             # Active specs (ready for implementation)
     └── promoted-issue-2026-05-04.md
 
-.worktrees/            # Managed by superpowers:using-git-worktrees
+.worktrees/            # Managed by using-git-worktrees
 └── fix/registration-field-naming/    # Isolated development environment
     ├── .git/                          # Worktree git link
     ├── backend/
@@ -267,21 +267,21 @@ docs/
 Git branches:
   main                                  # Protected base
   ├── feature/provision-update-flow     # Current feature branch (base for worktree)
-  │   └── fix/registration-field-naming  # Worktree branch (created by superpowers:using-git-worktrees)
+  │   └── fix/registration-field-naming  # Worktree branch (created by using-git-worktrees)
 ```
 
 ---
 
 ## When Done: Merge Back
 
-When implementation is verified and ready to ship, use `superpowers:finishing-a-development-branch`:
+When implementation is verified and ready to ship, use `finishing-a-development-branch`:
 
 ```
 User: I'm done with this implementation.
 
-You: I'll use superpowers:finishing-a-development-branch to complete this work.
+You: I'll use finishing-a-development-branch to complete this work.
 
-[Invokes superpowers:finishing-a-development-branch skill]
+[Invokes finishing-a-development-branch skill]
 
 The skill will:
 1. Verify tests pass
@@ -290,7 +290,7 @@ The skill will:
 4. Cleanup worktree automatically
 ```
 
-**Benefits of using superpowers:finishing-a-development-branch:**
+**Benefits of using finishing-a-development-branch:**
 - Consistent completion workflow across all projects
 - Proper worktree cleanup
 - Safety checks before merge
@@ -308,18 +308,18 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
                     Move spec → docs/specs/
                     Commit move
                                    ↓
-              superpowers:using-git-worktrees
+              using-git-worktrees
               (creates isolated workspace)
                                    ↓
-                    superpowers:writing-plans
+                    writing-plans
               (from worktree, creates plan.md)
                                    ↓
-      superpowers:subagent-driven-development
+      subagent-driven-development
               (executes implementation plan)
                                    ↓
                     Verify implementation
                                    ↓
-      superpowers:finishing-a-development-branch
+      finishing-a-development-branch
               (handles merge, cleanup)
                                    ↓
                     Back to base branch
@@ -333,8 +333,8 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
 2. **Oldest first**: Default to taking the earliest spec (FIFO)
 3. **Partial matching**: Accept substring matches for convenience
 4. **Branch hygiene**: Use conventional branch names (fix/, feat/, etc.)
-5. **Delegate worktree creation**: Let `superpowers:using-git-worktrees` handle isolation
-6. **Delegate completion**: Let `superpowers:finishing-a-development-branch` handle merge/cleanup
+5. **Delegate worktree creation**: Let `using-git-worktrees` handle isolation
+6. **Delegate completion**: Let `finishing-a-development-branch` handle merge/cleanup
 7. **Trust superpowers**: Each skill has a focused responsibility
 
 ---
@@ -352,12 +352,12 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
 
 | Superpower Skill | Role | When Invoked |
 |-----------------|------|--------------|
-| `superpowers:using-git-worktrees` | Creates isolated workspace | After committing spec move |
-| `superpowers:writing-plans` | Creates implementation plan.md | User chooses "Plan" option |
-| `superpowers:subagent-driven-development` | Executes implementation plan | After planning phase |
-| `superpowers:finishing-a-development-branch` | Handles merge and cleanup | When implementation is complete |
-| `superpowers:test-driven-development` | Writes tests before code | During implementation phase |
-| `superpowers:systematic-debugging` | Debugs issues found | When bugs are encountered |
+| `using-git-worktrees` | Creates isolated workspace | After committing spec move |
+| `writing-plans` | Creates implementation plan.md | User chooses "Plan" option |
+| `subagent-driven-development` | Executes implementation plan | After planning phase |
+| `finishing-a-development-branch` | Handles merge and cleanup | When implementation is complete |
+| `test-driven-development` | Writes tests before code | During implementation phase |
+| `systematic-debugging` | Debugs issues found | When bugs are encountered |
 
 ---
 
@@ -376,8 +376,8 @@ By delegating worktree creation and completion to superpowers skills:
 ## Technical Notes
 
 - take-a-todo creates the git commit for spec promotion
-- Worktree creation is fully delegated to `superpowers:using-git-worktrees`
-- Worktree cleanup is handled by `superpowers:finishing-a-development-branch`
+- Worktree creation is fully delegated to `using-git-worktrees`
+- Worktree cleanup is handled by `finishing-a-development-branch`
 - The skill acts as a coordinator: prepare → delegate → proceed
 
 ---
