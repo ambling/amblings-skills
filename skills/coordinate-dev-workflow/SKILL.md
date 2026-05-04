@@ -56,12 +56,12 @@ cat ~/.claude/teams/*/config.json 2>/dev/null
 
 | Role | Agent Name | Skills | Responsibilities |
 |------|------------|--------|------------------|
-| **Product Manager** | pm | `superpowers:brainstorming`, `/spec` | Define requirements, user flows, functional specs |
-| **Program Manager** | pgm | `superpowers:writing-plans` | Implementation planning, task breakdown |
-| **Test Engineer** | tester | `superpowers:test-driven-development`, `/test` | Unit tests (TDD), integration tests, E2E tests |
-| **Feature Engineer** | dev | `superpowers:test-driven-development`, `/feature` | Implementation to pass tests |
-| **Committer** | committer | `superpowers:finishing-a-development-branch` | Git workflow, commits, PR management |
-| **QA Engineer** | qa | `/qa-plan`, `/qa-run` | QA case generation and execution |
+| **Product Manager** | pm | `/brainstorming` | Define requirements, user flows, functional specs |
+| **Program Manager** | pgm | `/writing-plans` | Implementation planning, task breakdown |
+| **Test Engineer** | tester | `/test-driven-development`, `/systematic-debugging` | Unit tests (TDD), integration tests, E2E tests |
+| **Feature Engineer** | dev | `/test-driven-development` | Implementation to pass tests |
+| **Committer** | committer | `/finishing-a-development-branch` | Git workflow, commits, PR management |
+| **QA Engineer** | qa | `/qa` | QA case generation and execution |
 
 **Spawn each agent with their own tmux window**:
 
@@ -156,16 +156,15 @@ After spawning agents:
 1. Send message via `SendMessage` to `pm`:
    ```
    Task: Create specification for <feature>
-   Use superpowers:brainstorming to explore user intent, requirements and design.
-   Then use /spec skill to generate the specification document.
+   Use /brainstorming to explore user intent, requirements and design.
    Feature: <feature_name>
    Description: <description>
 
-   Note: Both brainstorming and spec outputs will use date in directory name (YYYY-MM-DD_<feature> format).
+   Note: Brainstorming output will use date in directory name (YYYY-MM-DD_<feature> format).
    ```
 
 2. Wait for agent completion (idle notification)
-3. Read `docs/coordinate/<feature>/spec_notes.md` for status
+3. Read `docs/coordinate/<feature>/brainstorming_notes.md` for status
 4. **Checkpoint**: Present spec to user for review/questions
 5. **AFTER APPROVAL**: Commit spec with `git commit` and push
 6. **Skip if**: User specifies `--skip-confirm` or `--auto`
@@ -177,8 +176,8 @@ After spawning agents:
 1. Send message via `SendMessage` to `pgm`:
    ```
    Task: Create implementation plan for <feature>
-   Use superpowers:writing-plans based on approved design.
-   Design location: docs/specs/YYYY-MM-DD_<feature>/design.md
+   Use /writing-plans based on approved specification.
+   Specification location: docs/superpowers/specs/YYYY-MM-DD_<feature>/<spec_name>.md
 
    Note: The directory name includes date (YYYY-MM-DD_<feature> format).
 
@@ -196,91 +195,52 @@ After spawning agents:
 6. Allow iterations based on feedback
 7. **Skip if**: User specifies `--skip-confirm` or `--auto`
 
-### Phase 4: Test-Driven Development (Red-Green)
+### Phase 4: Test-Driven Development
 
-#### 4a: Red Phase - Unit Tests
-
-**Agent**: tester
+**Agent**: tester (tests) and dev (implementation)
 
 1. Send message via `SendMessage` to `tester`:
    ```
-   Task: Write unit tests for <feature>
-   Use superpowers:test-driven-development to follow TDD methodology.
-   Then use /test skill to write the tests.
-   Plan location: docs/implementation/<feature>/implementation_plan.md
-   Ensure tests fail initially (red phase).
+   Task: Write tests and implement <feature> using TDD
+   Use /test-driven-development to follow the complete TDD cycle.
+   Plan location: docs/superpowers/plans/<feature>/plan.md
+   Follow red-green-refactor: write failing tests, implement to pass, refactor.
    ```
 
 2. Wait for agent completion
-3. Read `docs/coordinate/<feature>/test_notes.md` for status
-4. Verify: All tests should fail initially (red)
-
-#### 4b: Green Phase - Feature Implementation
-
-**Agent**: dev
-
-1. Send message via `SendMessage` to `dev`:
-   ```
-   Task: Implement <feature> to pass tests
-   Use superpowers:test-driven-development to guide implementation.
-   Then use /feature skill.
-   Test location: <test_files_from_tester>
-   Implement until all tests pass.
-   ```
-
-2. If tests still failing, send message to `tester` to update tests
-3. Iterate via SendMessage between `tester` and `dev` until tests pass
-4. Read `docs/coordinate/<feature>/feature_notes.md` for status
-5. Verify: All unit tests passing
-6. **Checkpoint**: Commit code with `git commit` and push
+3. Read `docs/coordinate/<feature>/test_driven_development_notes.md` for status
+4. Verify: All tests passing
+5. **Checkpoint**: Commit code with `git commit` and push
    - Use semantic commit message: `feat(<feature>): implement <feature>`
    - Push to remote: `git push`
 
 ### Phase 5: Integration & E2E Testing
 
-**Agent**: tester
+**Agent**: qa
 
-1. Send message via `SendMessage` to `tester`:
+1. Send message via `SendMessage` to `qa`:
    ```
-   Task: Write integration and E2E tests for <feature>
-   Use /test skill for integration testing.
+   Task: Execute integration and E2E tests for <feature>
+   Use /qa with --with-e2e flag for E2E test execution.
    Verify all tests pass.
    ```
 
 2. Wait for agent completion
-3. Read `docs/coordinate/<feature>/test_notes.md` for status
+3. Read `docs/coordinate/<feature>/qa_notes.md` for status
 4. Verify: All tests pass
 5. **Checkpoint**: Commit test files with `git commit` and push
    - Use semantic commit message: `test(<feature>): add integration and E2E tests`
    - Push to remote: `git push`
 
-### Phase 6: QA Planning
+### Phase 6: QA Planning and Execution
 
 **Agent**: qa
 
 1. Send message via `SendMessage` to `qa`:
    ```
-   Task: Generate QA test cases for <feature>
-   Use /qa-plan skill.
-   Feature location: docs/specs/<feature>.md
-   ```
-
-2. Wait for agent completion
-3. Read `docs/coordinate/<feature>/qa_plan_notes.md` for status
-4. **Checkpoint**: Present QA cases to user for review
-5. **AFTER APPROVAL**: Commit QA plan with `git commit` and push
-6. **Skip if**: User specifies `--skip-confirm` or `--auto`
-
-### Phase 7: QA Execution
-
-**Agent**: qa
-
-1. Send message via `SendMessage` to `qa`:
-   ```
-   Task: Execute QA tests for <feature>
-   Use /qa-run skill.
-   Test cases location: docs/qa/cases/<feature>/
-   Log results to docs/qa/log/<feature>/
+   Task: Generate and execute QA tests for <feature>
+   Use /qa skill with test plan for systematic QA testing.
+   Feature location: docs/superpowers/specs/YYYY-MM-DD_<feature>/<spec_name>.md
 
    **CRITICAL QA REQUIREMENTS:**
    - QA must test the REAL deployed service (production/staging)
@@ -291,12 +251,12 @@ After spawning agents:
    ```
 
 2. Wait for agent completion
-3. Read `docs/coordinate/<feature>/qa_run_notes.md` for status
+3. Read `docs/coordinate/<feature>/qa_notes.md` for status
 4. **VERIFY**: Check that QA report clearly states the environment tested
 5. Track results and issues found
 6. **Checkpoint**: Record QA results
 
-### Phase 8: Completion & Summary
+### Phase 7: Completion & Summary
 
 **IMPORTANT**: Team members remain available for future work. Teams are persistent and reusable.
 
@@ -349,13 +309,10 @@ Track all progress in `docs/coordinate/<feature_name>.md` and read individual sk
 
 | Skill | Notes File | Status Field |
 |-------|------------|--------------|
-| spec | `docs/coordinate/<feature>/spec_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
-| superpowers:writing-plans | `docs/coordinate/<feature>/writing_plans_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
-| test | `docs/coordinate/<feature>/test_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
-| feature | `docs/coordinate/<feature>/feature_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
-| qa-plan | `docs/coordinate/<feature>/qa_plan_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
-| qa-run | `docs/coordinate/<feature>/qa_run_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
-| report | `docs/coordinate/<feature>/report_notes.md` | Status: COMPLETED |
+| brainstorming | `docs/coordinate/<feature>/brainstorming_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
+| writing-plans | `docs/coordinate/<feature>/writing_plans_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
+| test-driven-development | `docs/coordinate/<feature>/test_driven_development_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
+| qa | `docs/coordinate/<feature>/qa_notes.md` | Status: COMPLETED/IN_PROGRESS/BLOCKED |
 
 ### Task Tracking
 
@@ -704,27 +661,26 @@ Agent (Team Lead):
 4. All agents confirmed working → Proceed with workflow
 
 # Phase 1: Specification
-5. SendMessage to="pm": "Create spec for JWT authentication. Use superpowers:brainstorming first to explore requirements and design."
-6. pm uses superpowers:brainstorming to create design doc at docs/superpowers/specs/YYYY-MM-DD-jwt-auth-design.md
-7. pm uses /spec to create docs/specs/YYYY-MM-DD_user-auth/spec.md
-8. Read docs/coordinate/user-auth/spec_notes.md → Status: COMPLETED
-9. Present spec to user → User approves
-10. **COMMIT**: `git commit -m "docs(spec): add user authentication specification" && git push`
+5. SendMessage to="pm": "Create specification for JWT authentication. Use /brainstorming to explore requirements and design."
+6. pm uses /brainstorming to create spec at docs/superpowers/specs/YYYY-MM-DD_<feature>/spec.md
+7. Read docs/coordinate/user-auth/brainstorming_notes.md → Status: COMPLETED
+8. Present spec to user → User approves
+9. **COMMIT**: `git commit -m "docs(spec): add user authentication specification" && git push`
 
 # Phase 2: Implementation Planning
-11. SendMessage to="pgm": "Create implementation plan for JWT authentication. Use superpowers:writing-plans based on approved spec."
-12. pgm creates implementation plan at docs/implementation/user-auth/implementation_plan.md
-13. Read docs/coordinate/user-auth/writing_plans_notes.md → Status: COMPLETED
-14. Present plan to user → User approves
-15. **COMMIT**: `git commit -m "docs(plan): add JWT auth implementation plan" && git push`
+10. SendMessage to="pgm": "Create implementation plan for JWT authentication. Use /writing-plans based on approved specification."
+11. pgm creates implementation plan at docs/superpowers/plans/<feature>/plan.md
+12. Read docs/coordinate/user-auth/writing_plans_notes.md → Status: COMPLETED
+13. Present plan to user → User approves
+14. **COMMIT**: `git commit -m "docs(plan): add JWT auth implementation plan" && git push`
 
 # [Continue through remaining phases...]
-# ... (implementation, testing, QA, etc.)
+# ... (implementation with TDD, QA, etc.)
 
 # Phase 7: Completion & Summary
-55. All phases complete
-56. SendMessage to="*": "Workflow complete - all phases finished successfully. Team members are now idle and available for new tasks."
-57. Final report to user: "user-auth feature delivered. Team members remain available for follow-up tasks using /coordinate"
+50. All phases complete
+51. SendMessage to="*": "Workflow complete - all phases finished successfully. Team members are now idle and available for new tasks."
+52. Final report to user: "user-auth feature delivered. Team members remain available for follow-up tasks using /coordinate"
 
 # Later - User requests another feature
 User: coordinate-dev-workflow: payment "Stripe integration"

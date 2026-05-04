@@ -57,12 +57,12 @@ Use `SendMessage` to delegate work. Match the task to the appropriate role:
 
 | Role | Agent Name | Best For |
 |------|------------|----------|
-| Product Manager | pm | Requirements, user flows, specs (uses superpowers:brainstorming) |
-| Program Manager | pgm | Implementation planning, task breakdown (uses superpowers:writing-plans) |
-| Test Engineer | tester | Testing, debugging, verification (uses superpowers:systematic-debugging, superpowers:test-driven-development) |
-| Feature Engineer | dev | Implementation, code changes (uses superpowers:test-driven-development) |
-| Committer | committer | Git workflow, commits, PR management (uses superpowers:finishing-a-development-branch) |
-| QA Engineer | qa | QA, testing, validation |
+| Product Manager | pm | Requirements, user flows, specs (uses /brainstorming) |
+| Program Manager | pgm | Implementation planning, task breakdown (uses /writing-plans) |
+| Test Engineer | tester | Testing, debugging, verification (uses /systematic-debugging, /test-driven-development) |
+| Feature Engineer | dev | Implementation, code changes (uses /test-driven-development) |
+| Committer | committer | Git workflow, commits, PR management (uses /finishing-a-development-branch) |
+| QA Engineer | qa | QA, testing, validation (uses /qa) |
 
 ### Message Format
 
@@ -164,11 +164,12 @@ After task completion, provide:
 5. **Keep user informed** - Report progress, blockers, and results
 6. **Use committer for git workflow** - Delegate all commits to the committer role
 7. **Leverage superpowers skills** - Team members should use appropriate superpowers:
-   - `superpowers:brainstorming` for requirements exploration
-   - `superpowers:writing-plans` for implementation planning
-   - `superpowers:test-driven-development` for implementation work
-   - `superpowers:systematic-debugging` for bug investigation
-   - `superpowers:finishing-a-development-branch` for git workflow
+   - `/brainstorming` for requirements exploration
+   - `/writing-plans` for implementation planning
+   - `/test-driven-development` for implementation work
+   - `/systematic-debugging` for bug investigation
+   - `/finishing-a-development-branch` for git workflow
+   - `/qa` for quality assurance testing
 
 ## Example Workflow
 
