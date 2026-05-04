@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/autoplan/SKILL.md
+../gstack/autoplan/SKILL.md

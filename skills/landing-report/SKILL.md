@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/landing-report/SKILL.md
+../gstack/landing-report/SKILL.md

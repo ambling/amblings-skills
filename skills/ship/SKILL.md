@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/ship/SKILL.md
+../gstack/ship/SKILL.md

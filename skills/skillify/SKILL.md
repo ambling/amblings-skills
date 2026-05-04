@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/skillify/SKILL.md
+../gstack/skillify/SKILL.md

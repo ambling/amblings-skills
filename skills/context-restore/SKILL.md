@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/context-restore/SKILL.md
+../gstack/context-restore/SKILL.md

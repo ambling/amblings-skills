@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/canary/SKILL.md
+../gstack/canary/SKILL.md

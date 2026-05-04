@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/setup-deploy/SKILL.md
+../gstack/setup-deploy/SKILL.md

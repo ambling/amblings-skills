@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/open-gstack-browser/SKILL.md
+../gstack/open-gstack-browser/SKILL.md

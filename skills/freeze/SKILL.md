@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/freeze/SKILL.md
+../gstack/freeze/SKILL.md

@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/sync-gbrain/SKILL.md
+../gstack/sync-gbrain/SKILL.md

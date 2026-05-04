@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/setup-browser-cookies/SKILL.md
+../gstack/setup-browser-cookies/SKILL.md

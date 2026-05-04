@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/connect-chrome/SKILL.md
+../gstack/connect-chrome/SKILL.md

@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/devex-review/SKILL.md
+../gstack/devex-review/SKILL.md

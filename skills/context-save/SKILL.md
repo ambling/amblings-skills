@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/context-save/SKILL.md
+../gstack/context-save/SKILL.md

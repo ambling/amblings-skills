@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/scrape/SKILL.md
+../gstack/scrape/SKILL.md

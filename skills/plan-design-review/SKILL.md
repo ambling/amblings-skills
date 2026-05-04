@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/plan-design-review/SKILL.md
+../gstack/plan-design-review/SKILL.md

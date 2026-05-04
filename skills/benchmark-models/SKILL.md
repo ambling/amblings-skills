@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/benchmark-models/SKILL.md
+../gstack/benchmark-models/SKILL.md

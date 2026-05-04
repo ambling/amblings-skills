@@ -1,1 +1,1 @@
-/home/ambling/Projects/if_dev1/.claude/skills/gstack/design-html/SKILL.md
+../gstack/design-html/SKILL.md
