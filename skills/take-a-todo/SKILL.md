@@ -107,6 +107,7 @@ What would you like to do with this spec?
 A) Review - Read through and provide feedback
 B) Revise - Make edits to the spec
 C) Plan - Start writing implementation plan (invokes writing-plans)
+        Full workflow: plan → implement → review → qa → merge
 
 Worktree created by using-git-worktrees
 Spec loaded: {filename}
@@ -274,7 +275,23 @@ Git branches:
 
 ## When Done: Merge Back
 
-When implementation is verified and ready to ship, use `finishing-a-development-branch`:
+After implementation is complete, follow the completion workflow:
+
+1. **Run `review`** - Code review with QA impact detection
+2. **Run `qa`** - Systematic QA testing
+3. **Use `finishing-a-development-branch`** - Handle merge and cleanup
+
+```
+User: I'm done with this implementation.
+
+You: Great! Let's complete the workflow:
+
+1. First, I'll use `review` for code review with QA impact detection
+2. Then, `qa` for systematic testing
+3. Finally, `finishing-a-development-branch` to merge and cleanup
+
+[Invokes review skill]
+```
 
 ```
 User: I'm done with this implementation.
@@ -317,7 +334,11 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
       subagent-driven-development
               (executes implementation plan)
                                    ↓
-                    Verify implementation
+              review
+              (code review with QA impact detection)
+                                   ↓
+              qa
+              (systematic QA testing)
                                    ↓
       finishing-a-development-branch
               (handles merge, cleanup)
@@ -348,14 +369,16 @@ QA/Review → /issue-to-spec → docs/todo/ (committed)
 
 ---
 
-## Integration with Superpowers Skills
+## Integration with Skills
 
-| Superpower Skill | Role | When Invoked |
-|-----------------|------|--------------|
+| Skill | Role | When Invoked |
+|-------|------|--------------|
 | `using-git-worktrees` | Creates isolated workspace | After committing spec move |
 | `writing-plans` | Creates implementation plan.md | User chooses "Plan" option |
 | `subagent-driven-development` | Executes implementation plan | After planning phase |
-| `finishing-a-development-branch` | Handles merge and cleanup | When implementation is complete |
+| `review` | Code review with QA impact detection | After implementation, before QA |
+| `qa` | Systematic QA testing with test plans | After review, before merge |
+| `finishing-a-development-branch` | Handles merge and cleanup | When QA passes |
 | `test-driven-development` | Writes tests before code | During implementation phase |
 | `systematic-debugging` | Debugs issues found | When bugs are encountered |
 
@@ -384,6 +407,9 @@ By delegating worktree creation and completion to superpowers skills:
 
 ## Version
 
-**Current:** 1.1.0
+**Current:** 1.2.0
 **Last Updated:** 2026-05-04
-**Changes:** Refactored to delegate worktree/completion to superpowers skills
+**Changes:** 
+- Added review and qa steps to workflow between implementation and merge
+- Updated integration table to include review and qa skills
+- Changed section title from "Integration with Superpowers Skills" to "Integration with Skills"
