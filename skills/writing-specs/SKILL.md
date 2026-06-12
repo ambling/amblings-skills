@@ -9,7 +9,7 @@ After brainstorming and sufficient discussion, summarize decisions into two stru
 
 **Announce at start:** "I'm using the writing-specs skill to formalize the feature and design specs."
 
-**Save specs to:** `docs/specs/YYYY-MM-DD-<feature-name>-feature-spec.md` and `docs/specs/YYYY-MM-DD-<feature-name>-design-spec.md`
+**Save specs to:** `docs/specs/YYYY-MM-DD-<feature-name>/spec.md` and `docs/specs/YYYY-MM-DD-<feature-name>/design.md`
 
 ## When to Use
 
@@ -28,21 +28,21 @@ If any of these are missing, surface the gap and ask before proceeding. Do not s
 
 ## File Structure
 
-Create two files in `docs/specs/`:
+Create a feature directory in `docs/specs/` with two files:
 
 ```
-docs/specs/
-  2026-06-06-notification-panel-feature-spec.md
-  2026-06-06-notification-panel-design-spec.md
+docs/specs/2026-06-06-notification-panel/
+  spec.md
+  design.md
 ```
 
-Use today's date and a short kebab-case feature name.
+Use today's date and a short kebab-case feature name as the directory name.
 
 ---
 
 ## Feature Spec Template
 
-**File:** `<date>-<feature>-feature-spec.md`
+**File:** `spec.md`
 
 **Purpose:** Define WHAT to build, for whom, and how to verify it works.
 
@@ -94,7 +94,7 @@ Use today's date and a short kebab-case feature name.
 
 ## Design Spec Template
 
-**File:** `<date>-<feature>-design-spec.md`
+**File:** `design.md`
 
 **Purpose:** Define HOW to build it — current system state, architecture changes, schemas, APIs.
 
