@@ -8,13 +8,13 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 This skill is based on the upstream superpowers `writing-plans` skill (see `sp-SKILL.md` for reference) with custom modifications.
 
 **Upstream base:** `sp-SKILL.md` (symlink to `superpowers/skills/writing-plans/SKILL.md`)
-**Customizations:** Task-oriented format, no code samples, acceptance criteria, E2E test coverage.
+**Customizations:** Task-oriented format, no code samples, acceptance criteria, E2E test coverage, QA case updates.
 
 ---
 
 ## Overview
 
-Write implementation plans as clear, self-contained tasks. Each task defines what to build and how to verify it — no code samples, just precise intent and acceptance criteria. The plan must include an E2E test task that validates the full feature against its spec.
+Write implementation plans as clear, self-contained tasks. Each task defines what to build and how to verify it — no code samples, just precise intent and acceptance criteria. The plan must include an E2E test task that validates the full feature against its spec, and a QA task that ensures existing QA cases are updated and the feature works end-to-end.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
@@ -89,12 +89,33 @@ Every task must contain enough detail for implementation without ambiguity. Thes
 - "Similar to Task N" (repeat the description — the engineer may be reading tasks out of order)
 - Steps that describe what to do without enough detail to act
 
-## E2E Test Coverage
+## Build and Deploy to Local Dev
 
-The plan **must** include a final task that creates E2E tests covering the feature spec end-to-end. This task validates the complete user-facing behavior described in the spec.
+The plan **must** include a task that rebuilds the application and deploys to the local dev environment after all implementation tasks are complete. This ensures the running app reflects all changes before E2E tests and QA verification run.
 
 ```markdown
-### Task N+1: E2E Test — [Feature Name]
+### Task N+1: Build & Deploy — Local Dev
+
+**Definition:** Rebuild the application with all implemented changes and deploy to the local development environment. Verify the app starts cleanly and is accessible.
+
+- [ ] **Step 1: Build** — Run the build command for the project (e.g., `npm run build`, `docker build`). Ensure build completes with no errors.
+- [ ] **Step 2: Deploy to local** — Deploy to local dev environment (e.g., `docker compose up`, `npm run dev`, local k8s). Use the same process the project uses for local development.
+- [ ] **Step 3: Smoke test** — Open the app in browser or hit the health endpoint. Confirm it loads without errors. Check console for unexpected warnings.
+- [ ] **Step 4: Commit build config changes** (if any) — `git commit -m "chore: update build config for [feature]"`
+
+**Acceptance Criteria:**
+- [ ] Build completes successfully with no errors
+- [ ] App is running and accessible at the local dev URL
+- [ ] No startup errors or crashes in logs
+- [ ] Existing features still work (no regressions from deploy)
+```
+
+## E2E Test Coverage
+
+The plan **must** include a task that creates E2E tests covering the feature spec end-to-end. This task validates the complete user-facing behavior described in the spec.
+
+```markdown
+### Task N+2: E2E Test — [Feature Name]
 
 **Definition:** End-to-end tests that validate the full feature flow against the spec. Tests must cover the happy path and key error scenarios outlined in the spec.
 
@@ -112,6 +133,35 @@ The plan **must** include a final task that creates E2E tests covering the featu
 - [ ] All E2E tests pass
 ```
 
+## QA Case Updates
+
+The plan **must** include a task that reviews and updates QA cases in `docs/qa/user-story/` to reflect the changed system behavior. If no existing QA case covers the new behaviors, add new ones.
+
+```markdown
+### Task N+3: QA — Update User Story Cases for [Feature Name]
+
+**Definition:** Review existing QA test cases in `docs/qa/user-story/` for relevance to this feature. Update cases affected by changed system behavior, and add new cases for behaviors not yet covered. Then run `/qa` to verify the feature works end-to-end.
+
+**Files:**
+- Review: `docs/qa/user-story/` (all relevant case files)
+- Modify: `docs/qa/user-story/<affected-case-file>.md` (update changed behaviors)
+- Create: `docs/qa/user-story/<new-case-file>.md` (if new cases needed)
+
+- [ ] **Step 1: Scan existing QA cases** — Read all case files in `docs/qa/user-story/`. Identify cases that reference changed components, APIs, or user flows.
+- [ ] **Step 2: Assess coverage gaps** — For each acceptance criterion in the feature spec, determine if an existing QA case covers it. List gaps.
+- [ ] **Step 3: Update affected cases** — For cases impacted by changed system behavior, update test steps and expected outcomes to match new behavior.
+- [ ] **Step 4: Add new cases** — For acceptance criteria with no existing QA coverage, write new test cases following the established format in `docs/qa/user-story/`.
+- [ ] **Step 5: Commit QA updates** — `git commit -m "qa: update user story cases for [feature]"`
+- [ ] **Step 6: Run /qa** — Invoke the `/qa` skill against the running application to verify the feature works correctly and catch any issues missed by automated tests.
+- [ ] **Step 7: Fix QA findings** — Address any bugs found during QA. Commit fixes.
+- [ ] **Step 8: Commit final** — `git commit -m "fix: address QA findings for [feature]"` (if fixes were needed)
+
+**Acceptance Criteria:**
+- [ ] Every QA case affected by this feature has been updated to reflect new behavior
+- [ ] Every acceptance criterion from the feature spec has QA case coverage (existing or new)
+- [ ] `/qa` runs clean with no unresolved bugs related to this feature
+```
+
 ## Self-Review
 
 After writing the complete plan, review against the spec with fresh eyes:
@@ -122,9 +172,11 @@ After writing the complete plan, review against the spec with fresh eyes:
 
 **3. E2E coverage:** Does the final E2E task cover every user-facing behavior from the spec?
 
-**4. Acceptance criteria check:** Does every task have clear, measurable acceptance criteria? Can an engineer verify completion unambiguously?
+**4. QA coverage:** Does the QA task cover every acceptance criterion? Are existing QA cases in `docs/qa/user-story/` reviewed for impact?
 
-**5. Type consistency:** Do types, method signatures, and property names used in later tasks match earlier task definitions?
+**5. Acceptance criteria check:** Does every task have clear, measurable acceptance criteria? Can an engineer verify completion unambiguously?
+
+**6. Type consistency:** Do types, method signatures, and property names used in later tasks match earlier task definitions?
 
 If you find issues, fix them inline. If you find a spec requirement with no task, add the task.
 
